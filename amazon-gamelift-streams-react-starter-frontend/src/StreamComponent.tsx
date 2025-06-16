@@ -6,6 +6,7 @@ import './StreamComponent.css';
 import * as gameliftstreamssdk from './gamelift-streams-websdk/gameliftstreams-1.0.0';
 import { ApiError, get, post } from 'aws-amplify/api';
 import { fetchAuthSession } from 'aws-amplify/auth';
+import NavBar from './NavBar';
 
 interface StreamComponentProps {
     signOut: any;
@@ -38,7 +39,7 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
             status: StreamState.STOPPED,
             sgId: '',
             appId: '',
-            regions: ['us-west-2'], // Must be supported Amazon GameLift Streams Region (https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/regions-quotas-rande.html)
+            regions: ['us-west-2'], // Must be supported Amazon GameLift Streams primary region (https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/regions-quotas-rande.html)
             inputEnabled: false,
             isStreamStarting: false
         };
@@ -227,36 +228,24 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
     render() {
         return (
             <>
-                {/* Title and Sign Out Button */}
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '0 20px'
-                }}>
-                    <h2 style={{margin: 0}}>Amazon GameLift Streams - Sample React Application</h2>
-                    {this.props.user && (
-                        <button style={{marginTop: '8px'}}onClick={this.props.signOut}>
-                            Sign Out
-                        </button>
-                    )}
-                </div>
-                <hr></hr>
+                {/* NavBar - Title and Sign Out */}
+                <NavBar user={this.props.user} signOut={this.props.signOut} />
 
                 {/* Input Fields and Buttons */}
                 <div style={{
-                    width: '100vw',
+                    width: '100%',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '20px',
                     padding: '0 20px',
-                    marginTop:'20px'
+                    marginTop:'20px',
+                    flexWrap: 'wrap'
                 }}>
                     <div>
-                        SG: <input type="text" name="sgId" onChange={this.handleInputChange}></input>
+                        Stream Group ID: <input type="text" name="sgId" onChange={this.handleInputChange}></input>
                     </div>
                     <div>
-                        AppId: <input type="text" name="appId" onChange={this.handleInputChange}></input>
+                        Application ID: <input type="text" name="appId" onChange={this.handleInputChange}></input>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <button

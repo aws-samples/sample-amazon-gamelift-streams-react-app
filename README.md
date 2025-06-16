@@ -27,7 +27,7 @@ This guide assumes you have the following packages already installed. If not, pl
    * **npm**: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
    * **aws-cli**: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
    * **aws-cdk**: https://docs.aws.amazon.com/cdk/v2/guide/cli.html
-You can use `aws configure` via aws-cli or other mechanism to authenticate your terminal in order to use CDK. You can find additional information on configuring security credentials [here](https://docs.aws.amazon.com/cdk/v2/guide/configure-access.html). Amazon GameLift Streams in only supported in some AWS regions. Make sure to set your aws-cli default region to one of the supported Amazon GameLift Streams regions. You can find additional information about supported regions [here](https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/regions-quotas-rande.html).
+You can use `aws configure` via aws-cli or other mechanism to authenticate your terminal in order to use CDK. You can find additional information on configuring security credentials [here](https://docs.aws.amazon.com/cdk/v2/guide/configure-access.html). Amazon GameLift Streams is only supported in some AWS regions. It is important to understand the difference between Amazon GameLift Streams `Primary locations` and `Remote locations`. The region where you create your initial Amazon GameLift Streams resources is known as the primary location. Remote locations allow you to extend coverage, enabling you to host your application and stream sessions in additional locations globally. Make sure to set your aws-cli default region to one of the supported Amazon GameLift Streams primary regions. You can find additional information about supported primary regions and remote regions [here](https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/regions-quotas-rande.html).
 
 ### Deployment
 
@@ -129,7 +129,7 @@ Response Body:
    - Browser disconnection triggers session cleanup
 
 ## Troubleshooting
-View logs within the Amazon CloudWatch AWS console. Closely monitor your terminal when deploying CDK stacks and ensure that CDK stacks are properly deployed within the CloudFormation AWS Console. Make sure you are following the deployment steps exactly and in the correct sequence. 
+View logs within the Amazon CloudWatch AWS console. Closely monitor your terminal when deploying CDK stacks and ensure that CDK stacks are properly deployed within the CloudFormation AWS Console. Make sure you are following the deployment steps exactly and in the correct sequence. On mobile devices, when testing your deployed Amazon CloudFront distribution, ensure you include `https://` before the cloudfront url. Desktop browsers often automatically prepend `https://` when needed, but mobile browsers can be more strict and require this.
 
 ## Clean Up
 You can clean up all the resources you created either with `cdk destroy` or via the CloudFormation AWS Console. If clearing stacks via AWS console, you need to delete the CloudFront distribution (in us-east-1 region) before you can delete the WAF WebACL.
