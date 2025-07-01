@@ -98,6 +98,24 @@ Response Body:
 }
 ```
 
+3. Reconnect Stream Session
+```typescript
+POST /reconnect
+Content-Type: application/json
+Authorization: Bearer <cognito-id-token>
+
+Request Body:
+{
+    SessionIdentifier: string;  // Stream session ARN
+    SignalRequest: string;      // WebRTC signal request
+}
+
+Response Body:
+{
+    signalResponse: string;     // WebRTC signal response
+}
+```
+
 ### Authentication Flow
 
 1. Users authenticate through Amazon Cognito User Pool
@@ -127,6 +145,12 @@ Response Body:
    - Input is enabled when entering fullscreen
    - Session can be terminated via the UI
    - Browser disconnection triggers session cleanup
+
+## Multi-Location Stream Groups
+This sample application includes a mechanism to use the multi-location stream group feature of Amazon GameLift Streams. You can allocate capacity for multiple regions within a stream group and use the dropdown selector in the web frontend to select which region you would like to stream from. This showcases how to conditionally stream your game executable from differect locations. You can learn more about multi-location stream groups on the [Managing your streams with Amazon GameLift Streams](https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/manage-streams.html) page of the documention and on the [supported locations](https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/regions-quotas-rande.html) page.
+
+## Stream Session Reconnection 
+This sample showcases how to reconnect to a previous stream session after losing connection to the stream. This can happen for many reasons. For instances when a user may have accidently closed the browser tab, the internet dropped or other reason for disconnection, the user can quickly reconnect back into the same previous stream session (within a connection timeout) without losing their progress. This uses the [CreateStreamSessionConnection](https://docs.aws.amazon.com/gameliftstreams/latest/apireference/API_CreateStreamSessionConnection.html) action. Within the web frontend, after terminating a stream session, you will see the arn of the previous stream session displayed. This arn can then be used to reconnect back into that previous session.
 
 ## Troubleshooting
 View logs within the Amazon CloudWatch AWS console. Closely monitor your terminal when deploying CDK stacks and ensure that CDK stacks are properly deployed within the CloudFormation AWS Console. Make sure you are following the deployment steps exactly and in the correct sequence. On mobile devices, when testing your deployed Amazon CloudFront distribution, ensure you include `https://` before the cloudfront url. Desktop browsers often automatically prepend `https://` when needed, but mobile browsers can be more strict and require this.

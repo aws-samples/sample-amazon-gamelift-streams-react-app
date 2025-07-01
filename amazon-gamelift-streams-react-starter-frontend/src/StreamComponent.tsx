@@ -24,6 +24,8 @@ interface StreamComponentState {
     status: StreamState;
     sgId: string;
     appId: string;
+    sessionId: string;
+    lastSessionId: string;
     regions: string[];
     inputEnabled: boolean;
     isStreamStarting: boolean;
@@ -39,14 +41,18 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
             status: StreamState.STOPPED,
             sgId: '',
             appId: '',
+            sessionId: '',
+            lastSessionId: '',
             regions: ['us-west-2'], // Must be supported Amazon GameLift Streams primary region (https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/regions-quotas-rande.html)
             inputEnabled: false,
             isStreamStarting: false
         };
 
         this.createStreamSession = this.createStreamSession.bind(this);
+        this.createStreamSessionConnection = this.createStreamSessionConnection.bind(this);
         this.closeConnection = this.closeConnection.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleRegionChange = this.handleRegionChange.bind(this);
         this.enableFullScreen = this.enableFullScreen.bind(this);
     }
 
@@ -143,6 +149,38 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
     }
 
     /**
+     * Creates a new stream session using StartStream Lambda and then waits for it to be ready using @waitForACTIVE
+     */
+    private async createStreamSessionConnection() {
+        this.setState({ isStreamStarting: true });
+        const signalRequest = await this.gameliftstreams?.generateSignalRequest();
+        const payload = {
+            SessionIdentifier: this.state.sessionId,
+            SignalRequest: signalRequest ?? '',
+        };
+        console.log(payload);
+
+        try {
+            const restOperation = post({
+                apiName: 'demo-api',
+                path: '/reconnect',
+                options: {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${(await fetchAuthSession()).tokens?.idToken?.toString()}`
+                    },
+                    body: payload
+                }
+            });
+            const { body } = await restOperation.response;
+            const data = JSON.parse(await body.text());
+            await this.startStream(data.signalResponse);
+        } catch (e) {
+            this.handleError(e);
+        }
+    }
+
+    /**
      * Waits for a stream session to be ready, polling a new stream sessions every second until its ready or times out.
      * This is more effective than having a Lambda function waiting for the session and potentially timing out.
      * This also allows for OnDemand scaling to work if a new session takes 30+ seconds to be ready.
@@ -166,12 +204,10 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
                 const data = JSON.parse(await body.text());
 
                 if (data.status === 'ACTIVE') { // the session is ACTIVE and we can connect
-                    await this.gameliftstreams?.processSignalResponse(data.signalResponse);
-                    this.gameliftstreams?.attachInput();
+                    await this.startStream(data.signalResponse);
                     this.setState((prevState) => ({
                         ...prevState,
-                        status: StreamState.RUNNING,
-                        isStreamStarting: false
+                        lastSessionId: arn
                     }));
                     return; // session is started, state is set for it so we can return
                 }
@@ -186,6 +222,16 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
         // timed out
         this.handleTimeout(arn);
         this.setState({ isStreamStarting: false });
+    }
+
+    private async startStream(signalResponse) {
+        await this.gameliftstreams?.processSignalResponse(signalResponse);
+        this.gameliftstreams?.attachInput();
+        this.setState((prevState) => ({
+            ...prevState,
+            status: StreamState.RUNNING,
+            isStreamStarting: false,
+        }));
     }
 
     /**
@@ -225,6 +271,14 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
         this.setState((prevState) => ({ ...prevState, [name]: value.trim() })); // Dynamically update state
     }
 
+    private handleRegionChange(event: React.ChangeEvent<HTMLSelectElement>) {
+        const region = event.target.value;
+        this.setState((prevState) => ({
+            ...prevState,
+            regions: [region] // Update the regions array with the selected region
+        }));
+    }
+
     render() {
         return (
             <>
@@ -247,10 +301,30 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
                     <div>
                         Application ID: <input type="text" name="appId" onChange={this.handleInputChange}></input>
                     </div>
+                    <div>
+                        Region: <select onChange={this.handleRegionChange} value={this.state.regions[0]}>
+                            <option value="ap-northeast-1">ap-northeast-1 (Tokyo)</option>
+                            <option value="eu-central-1">eu-central-1 (Frankfurt)</option>
+                            <option value="eu-west-1">eu-west-1 (Ireland)</option>
+                            <option value="us-east-1">us-east-1 (N. Virginia)</option>
+                            <option value="us-east-2">us-east-2 (Ohio)</option>
+                            <option value="us-west-2">us-west-2 (Oregon)</option>
+                        </select>
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <button
                             onClick={this.state.status !== StreamState.RUNNING ? this.createStreamSession : this.closeConnection}>
                             {this.state.status !== StreamState.RUNNING ? 'Start Stream' : 'End Stream'}
+                        </button>
+                        {this.state.isStreamStarting && <div className="spinner" />}
+                    </div>
+                    <div>
+                        Stream Session ID: <input type="text" name="sessionId" onChange={this.handleInputChange}></input>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <button
+                            onClick={this.createStreamSessionConnection}>
+                            Reconnect
                         </button>
                         {this.state.isStreamStarting && <div className="spinner" />}
                     </div>
@@ -261,6 +335,12 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
                                 onClick={this.enableFullScreen}
                                 disabled={this.state.status !== StreamState.RUNNING}
                             >Fullscreen</button>
+                        </div>
+                    }
+                    {
+                        this.state.lastSessionId === '' ? null :
+                        <div>
+                            Last Session ID: {this.state.lastSessionId}
                         </div>
                     }
                 </div>

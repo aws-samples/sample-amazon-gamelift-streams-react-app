@@ -24,6 +24,8 @@ async function execute() {
     await runCommand('npm install', startStreamPath);
     const getStreamPath = path.join(rootdir, 'lambda/GetStream');
     await runCommand('npm install', getStreamPath);
+    const createStreamSessionConnectionPath = path.join(rootdir, 'lambda/CreateStreamSessionConnection');
+    await runCommand('npm install', createStreamSessionConnectionPath);
 }
 
 execute();

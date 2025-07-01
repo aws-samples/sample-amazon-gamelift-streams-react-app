@@ -132,6 +132,27 @@ export class AmazonGameliftStreamsReactStarterAPIStack extends cdk.Stack {
             authorizationType: apigateway.AuthorizationType.COGNITO
         });
 
+        const reconnect = api.root.addResource('reconnect');
+
+        const createStreamSessionConnection = new lambda.Function(this, 'gamelift-streams-create-stream-connection-lambda', {
+            runtime: lambda.Runtime.NODEJS_22_X,
+            handler: 'CreateStreamSessionConnection.handler',
+            code: lambda.Code.fromAsset('lambda/CreateStreamSessionConnection'),
+            timeout: cdk.Duration.seconds(120),
+            logGroup: lambdaLogGroup
+        });
+
+        createStreamSessionConnection.addToRolePolicy(new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ['gameliftstreams:CreateStreamSessionConnection'],
+            resources: [`arn:aws:gameliftstreams:*:${this.account}:*`] // hardened to account level
+        }));
+
+        reconnect.addMethod('POST', new apigateway.LambdaIntegration(createStreamSessionConnection), {
+            authorizer: auth,
+            authorizationType: apigateway.AuthorizationType.COGNITO
+        });
+
         // outputs
         const endpointUrl = api.urlForPath('/');
         new cdk.CfnOutput(this, 'Endpoint', {
@@ -208,5 +229,16 @@ export class AmazonGameliftStreamsReactStarterAPIStack extends cdk.Stack {
             }
         ], true);
 
+        NagSuppressions.addResourceSuppressions(createStreamSessionConnection, [
+            {
+                id: "AwsSolutions-IAM5",
+                reason: "createStreamSessionConnection uses IAM RolePolicy that contains wildcard, but hardened to account level least priviledge."
+            },
+            {
+                id: 'AwsSolutions-IAM4',
+                reason: 'Using AWS Lambda Basic Execution Role is acceptable for this sample application. In production, consider using custom IAM policies.',
+                appliesTo: ['Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']
+            }
+        ], true);
     }
 }

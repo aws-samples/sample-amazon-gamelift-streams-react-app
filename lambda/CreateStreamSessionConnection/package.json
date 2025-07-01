@@ -1,0 +1,15 @@
+{
+  "name": "CreateStreamSessionConnectionLambda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "CreateStreamSessionConnection.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-lambda-powertools/logger": "^2.11.0",
+    "@aws-sdk/client-gameliftstreams": "^3.782.0"
+  }
+}
