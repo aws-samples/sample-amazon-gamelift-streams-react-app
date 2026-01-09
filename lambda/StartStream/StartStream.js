@@ -28,7 +28,10 @@ exports.handler = async function(event, context) {
             UserId: body.UserId,
             SignalRequest: body.SignalRequest,
             ConnectionTimeoutSeconds: Number(process.env.CONNECTION_TIMEOUT || 120),
-            Locations: body.Regions
+            Locations: body.Regions,
+            PerformanceStatsConfiguration: {
+                SharedWithClient: true  // Enable Stats Overlay
+            }
 
             // If desired, can pass Launch Arguments and Environment Variables to your executable here.
             // AdditionalLaunchArgs: [ "string" ],

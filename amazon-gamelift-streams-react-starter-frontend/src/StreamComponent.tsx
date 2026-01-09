@@ -3,10 +3,11 @@
 
 import React from 'react';
 import './StreamComponent.css';
-import * as gameliftstreamssdk from './gamelift-streams-websdk/gameliftstreams-1.0.0';
+import * as gameliftstreamssdk from './gamelift-streams-websdk/gameliftstreams-1.1.0';
 import { ApiError, get, post } from 'aws-amplify/api';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import NavBar from './NavBar';
+import StatsOverlay, { StatsOverlayRef } from './StatsOverlay';
 
 interface StreamComponentProps {
     signOut: any;
@@ -29,10 +30,12 @@ interface StreamComponentState {
     regions: string[];
     inputEnabled: boolean;
     isStreamStarting: boolean;
+    perfStats: any;
 }
 
 class StreamComponent extends React.Component<StreamComponentProps, StreamComponentState> {
     gameliftstreams?: gameliftstreamssdk.GameLiftStreams;
+    private statsOverlayRef = React.createRef<StatsOverlayRef>();
 
     constructor(props: StreamComponentProps) {
         super(props);
@@ -45,8 +48,12 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
             lastSessionId: '',
             regions: ['us-west-2'], // Must be supported Amazon GameLift Streams primary region (https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/regions-quotas-rande.html)
             inputEnabled: false,
-            isStreamStarting: false
+            isStreamStarting: false,
+            perfStats: {}
         };
+
+        // Adding Stats to frontend
+        this.performanceStatsCallback = this.performanceStatsCallback.bind(this);
 
         this.createStreamSession = this.createStreamSession.bind(this);
         this.createStreamSessionConnection = this.createStreamSessionConnection.bind(this);
@@ -75,6 +82,8 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
                 channelError: this.streamChannelErrorCallback,
                 serverDisconnect: this.streamServerDisconnectCallback
                 */
+
+                performanceStats: this.performanceStatsCallback // Adding Stats to frontend
             }
         });
     }
@@ -86,6 +95,15 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
     private getAudioElement(): HTMLAudioElement {
         return document.getElementById(`StreamAudioElement`) as HTMLAudioElement;
     }
+
+    private performanceStatsCallback(perfStats: any) {
+        // console.log(`[Perf Stats] GameLift Streams Perf Stats`, perfStats);
+        this.setState({ perfStats });
+    }
+
+    private toggleStats = () => {
+        this.statsOverlayRef.current?.toggleStats();
+    };
 
     /**
      * Sets the state for any kind of error - unwraps if error is of type ApiError.
@@ -337,6 +355,18 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
                             >Fullscreen</button>
                         </div>
                     }
+                    {this.state.status !== StreamState.RUNNING ? null :
+                        <div>
+                            <button
+                                onClick={this.toggleStats}
+                                disabled={this.state.status !== StreamState.RUNNING}
+                                style={{
+                                    backgroundColor: this.statsOverlayRef.current?.isVisible ? '#ff9900' : '',
+                                    color: this.statsOverlayRef.current?.isVisible ? 'white' : ''
+                                }}
+                            >Toggle Stats</button>
+                        </div>
+                    }
                     {
                         this.state.lastSessionId === '' ? null :
                         <div>
@@ -354,16 +384,24 @@ class StreamComponent extends React.Component<StreamComponentProps, StreamCompon
                     marginRight: 'calc(-50vw + 50%)',
                     padding: '20px'
                 }}>
-                    <video
-                        id={'StreamVideoElement'}
-                        autoPlay 
-                        playsInline 
-                        style={{
-                            width: '100%',
-                            height: 'auto',
-                            display: 'block'
-                        }}
-                    />
+                    <div style={{ position: 'relative' }}>
+                        <video
+                            id={'StreamVideoElement'}
+                            autoPlay 
+                            playsInline 
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                display: 'block'
+                            }}
+                        />
+                        <StatsOverlay
+                            ref={this.statsOverlayRef}
+                            gameliftstreams={this.gameliftstreams}
+                            perfStats={this.state.perfStats}
+                            isStreamRunning={this.state.status === StreamState.RUNNING}
+                        />
+                    </div>
                     <audio id={'StreamAudioElement'} autoPlay></audio>
                 </div>
             </>

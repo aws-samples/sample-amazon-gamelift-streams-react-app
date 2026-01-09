@@ -152,6 +152,16 @@ This sample application includes a mechanism to use the multi-location stream gr
 ## Stream Session Reconnection 
 This sample showcases how to reconnect to a previous stream session after losing connection to the stream. This can happen for many reasons. For instances when a user may have accidently closed the browser tab, the internet dropped or other reason for disconnection, the user can quickly reconnect back into the same previous stream session (within a connection timeout) without losing their progress. This uses the [CreateStreamSessionConnection](https://docs.aws.amazon.com/gameliftstreams/latest/apireference/API_CreateStreamSessionConnection.html) action. Within the web frontend, after terminating a stream session, you will see the arn of the previous stream session displayed. This arn can then be used to reconnect back into that previous session.
 
+## StatsOverlay Component
+The StatsOverlay component provides real-time performance monitoring for your streaming sessions. When a stream is active, you can click the "Toggle Stats" button to display an overlay showing:
+
+- **Client FPS**: Current frames per second from the client perspective
+- **Application Stats**: Normalized CPU and memory usage
+- **Instance Stats**: Underlying hardware utilization including CPU, memory, GPU, and VRAM usage (0-100%)
+- **Network Stats**: Real-time network metrics including round-trip time (RTT), jitter, and bitrate
+
+The component automatically polls WebRTC statistics every second when visible and provides color-coded visual indicators for performance metrics. You can find the implementation in `/amazon-gamelift-streams-react-starter-frontend/src/StatsOverlay.tsx`. Read more at the [Real-time performance stats](https://docs.aws.amazon.com/gameliftstreams/latest/developerguide/realtime-performance-stats.html) page in the documentation.
+
 ## Troubleshooting
 View logs within the Amazon CloudWatch AWS console. Closely monitor your terminal when deploying CDK stacks and ensure that CDK stacks are properly deployed within the CloudFormation AWS Console. Make sure you are following the deployment steps exactly and in the correct sequence. On mobile devices, when testing your deployed Amazon CloudFront distribution, ensure you include `https://` before the cloudfront url. Desktop browsers often automatically prepend `https://` when needed, but mobile browsers can be more strict and require this.
 
