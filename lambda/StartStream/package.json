@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.11.0",
-    "@aws-sdk/client-gameliftstreams": "^3.958.0"
+    "@aws-sdk/client-gameliftstreams": "^3.987.0"
   }
 }
