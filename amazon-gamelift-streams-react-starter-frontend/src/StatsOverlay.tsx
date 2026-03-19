@@ -50,7 +50,7 @@ const StatsOverlay = forwardRef<StatsOverlayRef, StatsOverlayProps>(({
   const [frameRate, setFrameRate] = useState<number | undefined>(undefined);
   
   // Ref to track the stats polling interval
-  const statsIntervalRef = useRef<NodeJS.Timer | null>(null);
+  const statsIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Refs for calculating bitrate (requires comparing current vs previous values)
   const previousBytesReceivedRef = useRef<number>(0);

@@ -85,7 +85,7 @@ export class AmazonGameliftStreamsReactStarterAPIStack extends cdk.Stack {
         });
 
         const startStreamLambda = new lambda.Function(this, 'gamelift-streams-start-stream-lambda', {
-            runtime: lambda.Runtime.NODEJS_22_X,
+            runtime: lambda.Runtime.NODEJS_24_X,
             handler: 'StartStream.handler',
             code: lambda.Code.fromAsset('lambda/StartStream'),
             timeout: cdk.Duration.seconds(10),
@@ -114,7 +114,7 @@ export class AmazonGameliftStreamsReactStarterAPIStack extends cdk.Stack {
         const arnParam = sgParam.addResource('{arn}');
 
         const getStreamLambda = new lambda.Function(this, 'gamelift-streams-get-stream-lambda', {
-            runtime: lambda.Runtime.NODEJS_22_X,
+            runtime: lambda.Runtime.NODEJS_24_X,
             handler: 'GetStream.handler',
             code: lambda.Code.fromAsset('lambda/GetStream'),
             timeout: cdk.Duration.seconds(10),
@@ -135,7 +135,7 @@ export class AmazonGameliftStreamsReactStarterAPIStack extends cdk.Stack {
         const reconnect = api.root.addResource('reconnect');
 
         const createStreamSessionConnection = new lambda.Function(this, 'gamelift-streams-create-stream-connection-lambda', {
-            runtime: lambda.Runtime.NODEJS_22_X,
+            runtime: lambda.Runtime.NODEJS_24_X,
             handler: 'CreateStreamSessionConnection.handler',
             code: lambda.Code.fromAsset('lambda/CreateStreamSessionConnection'),
             timeout: cdk.Duration.seconds(120),
