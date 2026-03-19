@@ -11,5 +11,8 @@
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.31.0",
     "@aws-sdk/client-gameliftstreams": "^3.1012.0"
+  },
+  "overrides": {
+    "fast-xml-parser": "^5.5.7"
   }
 }

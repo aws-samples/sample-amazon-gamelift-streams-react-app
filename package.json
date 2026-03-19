@@ -31,7 +31,8 @@
     "@xstate/react": {
       "react": "^19.1.0"
     },
-    "glob": "^10.0.0",
-    "inflight": "^2.0.0"
+    "glob": "^13.0.0",
+    "inflight": "^2.0.0",
+    "fast-xml-parser": "^5.5.7"
   }
 }
