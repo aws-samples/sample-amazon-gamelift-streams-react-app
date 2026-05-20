@@ -8,3 +8,7 @@ cdk.out
 
 # macOS system files
 .DS_Store
+
+# Tool directories
+.kiro
+.ash
