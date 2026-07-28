@@ -1,0 +1,19 @@
+.rotate-prompt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  z-index: 200;
+}
+.rotate-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.rotate-prompt p {
+  font-size: 18px;
+  text-align: center;
+}

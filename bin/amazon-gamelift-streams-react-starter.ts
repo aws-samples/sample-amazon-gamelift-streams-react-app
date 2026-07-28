@@ -21,5 +21,10 @@ new AmazonGameliftStreamsReactStarterFrontendStack(app, 'AmazonGameliftStreamsRe
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'us-east-1' }
 });
 
+new AmazonGameliftStreamsReactStarterFrontendStack(app, 'AmazonGameliftStreamsReactStarterMobileFrontendStack', {
+    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'us-east-1' },
+    frontendBuildPath: './mobile-frontend/build'
+});
+
 // cdk-nag report
 cdk.Aspects.of(app).add(new AwsSolutionsChecks());

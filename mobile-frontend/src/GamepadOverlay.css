@@ -1,0 +1,40 @@
+.gamepad-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+.joystick-left, .joystick-right, .action-buttons {
+  pointer-events: auto;
+  position: absolute;
+  bottom: 40px;
+}
+.joystick-left {
+  left: 40px;
+}
+.joystick-right {
+  right: 160px;
+}
+.action-buttons {
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.action-buttons button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.action-buttons button:active {
+  background: rgba(255,255,255,0.3);
+}

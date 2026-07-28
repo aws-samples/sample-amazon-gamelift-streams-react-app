@@ -18,6 +18,11 @@ async function execute() {
     await runCommand('mkdir build', frontendPath);
     await runCommand('mkdir gamelift-streams-websdk', frontendPath + '/src');
 
+    // Install node modules within mobile frontend directory
+    console.info('Installing Mobile Frontend Dependencies...');
+    const mobileFrontendPath = path.join(rootdir, 'mobile-frontend');
+    await runCommand('npm install', mobileFrontendPath);
+
     console.info('Installing Lambda Dependencies...');
     // Install node modules within lambda directories
     const startStreamPath = path.join(rootdir, 'lambda/StartStream');
