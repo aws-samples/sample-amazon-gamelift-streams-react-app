@@ -1,0 +1,26 @@
+{
+  "name": "amazon-gamelift-streams-mobile-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@aws-amplify/ui-react": "6.15.3",
+    "aws-amplify": "6.16.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-joystick-component": "6.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.29",
+    "@types/react": "19.2.3",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "4.5.2",
+    "typescript": "5.8.3",
+    "vite": "6.4.3"
+  },
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
+}

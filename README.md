@@ -10,7 +10,7 @@ This project uses the AWS Cloud Development Kit (CDK) to deploy the AWS Infrastr
 
 ![](images/Amazon-GameLift-Streams-reference-architecture.png)
 
-The Application is deployed through 2 CDK stacks:
+The Application is deployed through 2 CDK stacks (3 if including the optional mobile frontend):
 
 1. **AmazonGameLiftStreamsReactStarterAPIStack:** Deploys the serverless API to a region of your choice. This deployment includes:
    1. `StartStream` and `GetStream` Lambda functions
@@ -20,6 +20,7 @@ The Application is deployed through 2 CDK stacks:
    1. Amazon S3 bucket containing the demo SPA
    2. Amazon CloudFront CDN distribution distributing the SPA
    3. AWS WAF to secure the CloudFront distribution
+3. **(Optional) AmazonGameliftStreamsReactStarterMobileFrontendStack:** Deploys the mobile-optimized frontend to `us-east-1`. Uses the same infrastructure as the desktop frontend (S3 + CloudFront + WAF) with a separate distribution.
 
 ## Prerequisites
 This guide assumes you have the following packages already installed. If not, please install before proceeding.
@@ -40,8 +41,12 @@ You can use `aws configure` via aws-cli or other mechanism to authenticate your 
 7. Add correct region within `amazon-gamelift-streams-react-starter-frontend/src/StreamComponent.tsx` inside the StreamComponent class. This sample uses `us-west-2` by default.
 8. Within the `/amazon-gamelift-streams-react-starter-frontend` directory, run `npm run build` to build the single page application frontend. Don't forget that if you make changes to your frontend, you need to re-build with `npm run build` before redeploying the frontend cdk stack.
 9. Run `cdk deploy AmazonGameliftStreamsReactStarterFrontendStack` at the root level of this repository, to deploy the web frontend.
-10. Once everything is deployed, you can visit your deployed frontend via the Amazon CloudFront distribution, or while developing on localhost by running `npm start` within the `/amazon-gamelift-streams-react-starter-frontend` directory.
-11. You will need an Amazon Cognito user to authenticate into the frontend wep page. You will need to manually create this user within the deployed userpool in the Cognito AWS Console. When creating your Cognito user in the AWS console, you can select `Mark email address as verified`, to avoid needing to send yourself a verification code when signing into the web frontend the first time.
+10. **(Optional - Mobile Frontend)** To deploy the mobile-optimized frontend instead of (or in addition to) the desktop frontend:
+    1. Update the AWS Amplify SDK configuration in `/mobile-frontend/src/App.tsx` with the same resource identifiers from step 5.
+    2. Within the `/mobile-frontend` directory, run `npm run build` to build the mobile frontend.
+    3. Run `cdk deploy AmazonGameliftStreamsReactStarterMobileFrontendStack` at the root level of this repository. This deploys a separate CloudFront distribution for the mobile frontend.
+11. Once everything is deployed, you can visit your deployed frontend via the Amazon CloudFront distribution, or while developing on localhost by running `npm start` within the `/amazon-gamelift-streams-react-starter-frontend` directory (or within `/mobile-frontend` for the mobile version).
+12. You will need an Amazon Cognito user to authenticate into the frontend wep page. You will need to manually create this user within the deployed userpool in the Cognito AWS Console. When creating your Cognito user in the AWS console, you can select `Mark email address as verified`, to avoid needing to send yourself a verification code when signing into the web frontend the first time.
 
 
 ### Creating a GameLift Stream Application and Stream Group

@@ -12,9 +12,19 @@ import { SecurityPolicyProtocol, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cl
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as wafv2 from 'aws-cdk-lib/aws-wafv2';
 
+export interface AmazonGameliftStreamsReactStarterFrontendStackProps extends cdk.StackProps {
+    /**
+     * Relative path to the frontend build output directory.
+     * @default './amazon-gamelift-streams-react-starter-frontend/build'
+     */
+    frontendBuildPath?: string;
+}
+
 export class AmazonGameliftStreamsReactStarterFrontendStack extends cdk.Stack {
-    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    constructor(scope: Construct, id: string, props?: AmazonGameliftStreamsReactStarterFrontendStackProps) {
         super(scope, id, props);
+
+        const frontendBuildPath = props?.frontendBuildPath ?? './amazon-gamelift-streams-react-starter-frontend/build';
 
         const websiteBucket = new s3.Bucket(this, 'amazon-gamelift-streams-react-starter-frontend-WebsiteBucket', {
             removalPolicy: RemovalPolicy.DESTROY,
@@ -52,7 +62,7 @@ export class AmazonGameliftStreamsReactStarterFrontendStack extends cdk.Stack {
         });
 
         new s3deploy.BucketDeployment(this, 'amazon-gamelift-streams-react-starter-frontend-DeployWebsite', {
-            sources: [s3deploy.Source.asset('./amazon-gamelift-streams-react-starter-frontend/build')],
+            sources: [s3deploy.Source.asset(frontendBuildPath)],
             destinationBucket: websiteBucket,
             distribution: distribution
         });
