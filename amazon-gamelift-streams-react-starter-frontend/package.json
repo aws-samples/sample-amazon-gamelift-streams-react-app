@@ -42,7 +42,7 @@
     "nth-check": "2.1.1",
     "postcss": "^8.5.23",
     "http-proxy-middleware": "^2.0.10",
-    "svgo": "^3.3.4",
+    "svgo": "^3.3.5",
     "rimraf": "^5.0.0",
     "glob": "^13.0.0",
     "inflight": "lru-cache@^10.0.0",
